@@ -27,7 +27,7 @@ library(openintro)
 library(ggrepel)
 ```
 
-```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Jovana Askrabic on Unsplash", eval = TRUE}
+```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Jovana Askrabic on Unsplash", fig.alt = "A dog looking up at the camera.", eval = TRUE}
 knitr::include_graphics("img/jovana-askrabic-XYIQXLH_v0o-unsplash.jpg")
 ```
 
@@ -44,8 +44,6 @@ By the end of this assignment, you will be able to:
 - Make commits with meaningful messages
 - Push changes to GitHub
 - Generate a PDF document for submission
-
-**Don't worry if these terms are unfamiliar!** We'll walk through each step carefully.
 
 ---
 
@@ -102,7 +100,7 @@ The next few steps will walk you through the process of getting information of t
 
 ## Step 1. Get URL of repo to be cloned
 
-```{r clone-repo-link, fig.margin = TRUE, echo = FALSE, eval = TRUE}
+```{r clone-repo-link, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.alt = "GitHub repository page with the green Code button open, showing the HTTPS clone URL and a clipboard icon to copy it."}
 knitr::include_graphics("img/clone-repo-link.png")
 ```
 
@@ -112,7 +110,7 @@ On GitHub, click on the green **Code** button, select **HTTPS** (this might alre
 
 Go to [JuptyerHub](https://santiago.cloudbank.2i2c.cloud/hub/login) and then **open an RStudio Notebook**.
 
-```{r course-workspace, fig.margin = TRUE, echo = FALSE, eval = TRUE}
+```{r course-workspace, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.alt = "JupyterHub launcher screen showing the RStudio Notebook option."}
 knitr::include_graphics("img/jupyterhub.png")
 ```
 
@@ -122,7 +120,7 @@ In RStudio, click on the **down arrow** next to New Project and then choose **Ne
 
 In the pop-up window, **paste the URL** you copied from GitHub, make sure the box for **Add packages from the base project** is checked (it should be, by default) and then click **OK**.
 
-```{r new-project-from-git, echo = FALSE, eval = TRUE, fig.align = "left"}
+```{r new-project-from-git, echo = FALSE, eval = TRUE, fig.align = "left", fig.alt = "RStudio's New Project from Git Repository dialog with the repository URL field highlighted."}
 knitr::include_graphics("img/new-project-from-git.png")
 ```
 
@@ -133,7 +131,7 @@ knitr::include_graphics("img/new-project-from-git.png")
 
 RStudio is comprised of four panes.
 
-```{r rstudio-anatomy, fig.fullwidth=TRUE, echo = FALSE, eval = TRUE}
+```{r rstudio-anatomy, fig.fullwidth=TRUE, echo = FALSE, eval = TRUE, fig.alt = "Diagram labeling RStudio's four panes: Console (bottom left), Files/other panes (bottom right), Editor (top left), and Environment/Git (top right)."}
 knitr::include_graphics("img/rstudio-anatomy.png")
 ```
 
@@ -154,7 +152,7 @@ The top portion of your R Markdown file (between the three dashed lines) is call
 
 Open the R Markdown (Rmd) file in your project, change the author name to your name, and knit the document.
 
-```{r yaml-raw-to-rendered, echo = FALSE, eval = TRUE, fig.align = "center"}
+```{r yaml-raw-to-rendered, echo = FALSE, eval = TRUE, fig.align = "center", fig.alt = "Side-by-side comparison of the raw YAML header text and how the author name appears in the rendered document title block."}
 knitr::include_graphics("img/yaml-raw-to-rendered.png")
 ```
 
@@ -166,7 +164,7 @@ You should see that your Rmd (R Markdown) file and its output, your md file (Mar
 
 Next, click on **Diff**. This will pop open a new window that shows you the **diff**erence between the last committed state of the document and its current state that includes your changes. If you're happy with these changes, click on the checkboxes of all files in the list, and type *"Update author name"* in the **Commit message** box and hit **Commit**.
 
-```{r update-author-name-commit, echo = FALSE, eval = TRUE, fig.align = "left"}
+```{r update-author-name-commit, echo = FALSE, eval = TRUE, fig.align = "left", fig.alt = "RStudio Git commit window showing the changed files checked and the commit message 'Update author name' entered."}
 knitr::include_graphics("img/update-author-name-commit.png")
 ```
 
@@ -176,7 +174,7 @@ You don't have to commit after every change, this would get quite cumbersome. Yo
 
 Now that you have made an update and committed this change, it's time to push these changes to the web! Or more specifically, to your repo on GitHub. Why? So that others can see your changes. And by others, we mean the course teaching team (your repos in this course are private to you and us, only). In order to push your changes to GitHub, click on **Push**.
 
-```{r ready-to-push, fig.margin = TRUE, echo = FALSE, eval = TRUE}
+```{r ready-to-push, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.alt = "RStudio Git pane with the Push button highlighted, ready to send committed changes to GitHub."}
 knitr::include_graphics("img/ready-to-push.png")
 ```
 
@@ -199,7 +197,7 @@ R is an open-source language, and developers contribute functionality to R via p
 
 We use the `library()` function to load packages. In your R Markdown document you should see an R chunk labelled `load-packages` which has the necessary code for loading both packages. You should also load these packages in your Console, which you can do by sending the code to your Console by clicking on the **Run Current Chunk** icon (green arrow pointing right icon).
 
-```{r load-packages-chunk, echo = FALSE, eval = TRUE, fig.align = "left"}
+```{r load-packages-chunk, echo = FALSE, eval = TRUE, fig.align = "left", fig.alt = "RStudio code chunk showing library(tidyverse) and library(openintro) with the Run Current Chunk icon highlighted."}
 knitr::include_graphics("img/load-packages-chunk.png")
 ```
 
@@ -217,40 +215,11 @@ You can view the dataset as a spreadsheet using the `View()` function. Note that
 View(seattlepets)
 ```
 
-```{r data.viewer, echo = FALSE, eval = TRUE, fig.align = "left"}
+```{r data.viewer, echo = FALSE, eval = TRUE, fig.align = "left", fig.alt = "RStudio data viewer window showing the seattlepets dataset as a spreadsheet with columns for animal name and species."}
 knitr::include_graphics("img/view-data.png")
 ```
 
 You can find out more about the dataset by inspecting its documentation (which contains a **data dictionary**, name of each variable and its description), which you can access by running `?seattlepets` in the Console or using the Help menu in RStudio to search for `seattlepets`.
-
-## Common Issues and Solutions
-
-As you work through this assignment, you might encounter some issues. Here are the most common ones:
-
-
-**Knitting errors:**
-
-- **Error: "there is no package called..."** → Run `library(tidyverse)` and `library(openintro)` in your Console first
-- **Error: "object not found"** → Make sure you've run all code chunks before the one causing the error
-- **Can't find the Knit button** → Look at the top of the editor pane (where your .Rmd file is open)
-
-**Git/GitHub issues:**
-
-- **Git pane is empty** → You haven't made any changes yet, or you need to save your file first
-- **Can't push** → Make sure you committed first (commit before push!)
-- **Authentication error** → Check with your instructor about the authentication setup for JupyterHub
-
-**R Markdown issues:**
-
-- **Output doesn't match what I see in Console** → Click the **Run All Chunks Above** button (down arrow icon) before knitting
-- **My changes aren't showing** → Make sure you saved the file (Ctrl+S or Cmd+S)
-
-**General tips:**
-
-- Save your work frequently (Ctrl+S or Cmd+S)
-- Knit often to catch errors early
-- Read error messages carefully - they often tell you what's wrong
-- Don't hesitate to ask for help!
 
 ---
 
@@ -279,7 +248,7 @@ As you work through this assignment, you might encounter some issues. Here are t
 The two lines of code can be read as "Start with the seattlepets data frame, and then count the animal_names, and display the results sorted in descending order. The 'and then' in the previous sentence maps to %>%, the pipe operator, which takes what comes before it and plugs it in as the first argument of the function that comes after it."
 ```
 
-```{r count, include = TRUE}
+```{r count, include = TRUE, eval = TRUE}
 seattlepets %>%
   count(animal_name, sort = TRUE)
 ```
@@ -328,13 +297,13 @@ Which option groups all the cats together and all the dogs together, with names 
 
 *After completing this exercise:*
 
-🧶 Knit → ✅ Commit with message `"Completed Exercise 4` → ⬆️ Push
+🧶 Knit → ✅ Commit with message `"Completed Exercise 4"` → ⬆️ Push
 
 5.  The following visualization plots the proportion of dogs with a given name versus the proportion of cats with the same name. The 20 most common cat and dog names are displayed. The diagonal line on the plot is the $x = y$ line; if a name appeared on this line, the name's popularity would be exactly the same for dogs and cats.
 
 **Tip:** You don't need to understand all the code that creates this visualization - that will come later in the course. For now, just look at the plot and answer the questions about what you observe.
 
-```{r eval = TRUE, echo = FALSE, fig.fullwidth = TRUE, warning=FALSE}
+```{r eval = TRUE, echo = FALSE, fig.fullwidth = TRUE, warning=FALSE, fig.alt = "Scatterplot comparing the proportion of dogs versus cats sharing each of the 20 most common pet names, with a diagonal reference line where a name would be equally popular for both species; most points fall off the line, indicating names tend to skew toward one species."}
 # data prep
 name_props <- seattlepets %>% 
   filter(
@@ -396,4 +365,4 @@ b.  Is the relationship between the two variables (proportion of cats with a giv
 3. Download the PDF file from the Files pane
 4. Upload the PDF to Canvas
 
-**✓ Final Checkpoint:** Visit your GitHub repo one more time to confirm all your work is there. We will grade what we see in your repo on GitHub!
+**✓ Final Checkpoint:** Visit your GitHub repo one more time to confirm all your work is there. Grading is based on the PDF you upload to Canvas, so double-check it before submitting — but your GitHub repo should be up to date as well.
