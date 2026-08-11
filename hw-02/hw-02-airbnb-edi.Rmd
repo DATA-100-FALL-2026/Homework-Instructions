@@ -23,13 +23,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Madeleine Kohler on Unsplash", eval = TRUE}
+```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Madeleine Kohler on Unsplash", fig.alt = "A row of colorful traditional buildings, evoking the residential neighborhoods of Edinburgh discussed in this assignment.", eval = TRUE}
 knitr::include_graphics("img/madeleine-kohler-90Qn643Pq9c-unsplash.jpg")
 ```
 
 Once upon a time, people traveled all over the world, and some stayed in hotels and others chose to stay in other people's houses that they booked through Airbnb. Recent developments in Edinburgh regarding the growth of Airbnb and its impact on the housing market means a better understanding of the Airbnb listings is needed. Using data provided by Airbnb, we can explore how Airbnb availability and prices vary by neighborhood.
 
-# Getting started
+# Getting Started
 
 ## Learning Objectives
 
@@ -45,7 +45,7 @@ In this assignment, you will practice:
 
 Navigate to your `homework-instructions` repo in JupyterHub and open the `hw-02-airbnb-edi.Rmd` file. Knit the document to make sure it compiles without errors.
 
-## Warm up
+## Warm Up
 
 Before we introduce the data, let's warm up with some simple exercises.
 
@@ -79,7 +79,7 @@ devtools::install_github("tidyverse/dsbox")
 
 The data can be found in the **dsbox** package, and it's called `edibnb`. Since the dataset is distributed with the package, we don't need to load it separately; it becomes available to us when we load the package.
 
-You can view the dataset as a spreadsheet using the `View()` function. Note that you should not put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window (and the concept of popping open a window in a static document doesn't really make sense...). When you run this in the console, you'll see the following **data viewer** window pop up.
+You can view the dataset as a spreadsheet using the `View()` function. Note that you should not put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window (and the concept of popping open a window in a static document doesn't really make sense...). The chunk below is shown only to illustrate the syntax — never actually run it inside your .Rmd; type it directly into the Console instead.
 
 ```{r view-data}
 View(edibnb)
@@ -97,8 +97,11 @@ You can find out more about the dataset by inspecting its documentation, which y
 
 **Hint:** In your answer, type a backtick, then r, then space, then `nrow(edibnb)`, then close with another backtick. When you knit, this will show the actual number instead of the code.
 
+**Your answer:** [Write a sentence here using inline R code, e.g., the number of observations is \`r nrow(edibnb)\`, so the number updates automatically if the data changes.]
 
 2.  Run `View(edibnb)` in your Console to view the data in the data viewer. What does each row in the dataset represent?
+
+**Your answer:** [Type your answer here.]
 
 *After completing Exercises 1-2:*
 
@@ -106,7 +109,7 @@ You can find out more about the dataset by inspecting its documentation, which y
 
 Each column represents a variable. We can get a list of the variables in the data frame using the `names()` function.
 
-```{r}
+```{r list-names, eval = TRUE}
 names(edibnb)
 ```
 
@@ -133,10 +136,10 @@ ggplot(data = dataset_name, mapping = aes(x = variable)) +
 
 3.  Create a faceted histogram where each facet represents a neighborhood and displays the distribution of Airbnb prices in that neighborhood.
 
-  a) Experiment with binwidth
+**a) Experiment with binwidth**
 
 Try binwidths of 25, 50, and 100. Which gives you the most useful view of the data?
-```{r price-hist-experiments}
+```{r price-hist-experiments, fig.alt = "Faceted histograms of Airbnb price by neighborhood, tested at binwidths of 25, 50, and 100."}
 # Try binwidth = 25
 ggplot(data = edibnb, mapping = aes(x = price)) +
   geom_histogram(binwidth = 25) +
@@ -148,9 +151,9 @@ ggplot(data = edibnb, mapping = aes(x = price)) +
 # Try binwidth = 100
 ```
 
-*Which binwidth did you choose and why?*
+**Your answer:** [Which binwidth did you choose and why?]
 
- b) Experiment with facet layout*
+**b) Experiment with facet layout**
 
 Try these three options:
 
@@ -158,16 +161,16 @@ Try these three options:
 - `facet_wrap(~neighbourhood, ncol = 1)` - stacks vertically  
 - `facet_wrap(~neighbourhood, nrow = 1)` - arranges horizontally
 
-*Which layout did you choose and why?*
+**Your answer:** [Which layout did you choose and why?]
 
- c) Create your final visualization
+**c) Create your final visualization**
 
 ```{marginfigure}
 **Note:** The plot will give a warning about some observations with non-finite values for price being removed. Don't worry about the warning, it simply means that 199 listings in the data didn't have prices available, so they can't be plotted.
 ```
 
 Use your chosen binwidth and layout:
-```{r final-price-histogram, eval = FALSE}
+```{r final-price-histogram, eval = FALSE, fig.alt = "Faceted histogram of Airbnb price by neighborhood, using the binwidth and layout chosen above."}
 # Your final code here
 ```
 
@@ -177,10 +180,10 @@ Use your chosen binwidth and layout:
 
 4.  This question has three parts that work together to explore the top 5 most expensive neighborhoods.
 
-  a) Identify the top 5 neighborhoods by median price. Complete the pipeline to find neighborhoods with the highest median prices:
+**a) Identify the top 5 neighborhoods by median price.** Complete the pipeline to find neighborhoods with the highest median prices:
   
 ```{r top-5-neighborhoods, eval = FALSE}
-top_5 %
+top_5 <- edibnb %>%
   group_by(___) %>%
   summarise(median_price = median(___, na.rm = TRUE)) %>%
   arrange(desc(___)) %>%
@@ -189,10 +192,10 @@ top_5 %
 top_5
 ```
 
-  b) Create ridge plots for these neighborhoods. 
+**b) Create ridge plots for these neighborhoods.**
   
-  Ridge plots show distributions stacked vertically, making them easy to compare.
-```{r ridge-plots, message = FALSE, eval = FALSE}
+Ridge plots show distributions stacked vertically, making them easy to compare.
+```{r ridge-plots, message = FALSE, eval = FALSE, fig.alt = "Ridge plot comparing the distribution of Airbnb prices across the top 5 most expensive neighborhoods."}
 library(ggridges)
 
 # Filter for top 5 neighborhoods and create ridge plot
@@ -207,7 +210,7 @@ edibnb %>%
   )
 ```
 
-  c) Calculate the summary statistics.
+**c) Calculate the summary statistics.**
   
 ```{r summary-stats, eval = FALSE}
 edibnb %>%
@@ -229,6 +232,8 @@ Using both the visualization and summary statistics, describe the distribution o
 - Which has the most variation (spread) in prices?
 - Are there any notable patterns or outliers?
 
+**Your answer:** [Type your answer here. Use as much space as you need.]
+
 *After completing Exercise 4:*
 
 🧶 Knit → ✅ Commit with message `"Completed Exercise 4"` → ⬆️ Push
@@ -243,7 +248,7 @@ Using both the visualization and summary statistics, describe the distribution o
 - Ridge plots: `geom_density_ridges()` (requires `library(ggridges)`)
 
 
-```{r review-scores-viz, eval = FALSE}
+```{r review-scores-viz, eval = FALSE, fig.alt = "Visualization comparing the distribution of Airbnb review scores across neighborhoods."}
 # Your code here
 ```
 
@@ -252,6 +257,8 @@ Using both the visualization and summary statistics, describe the distribution o
 - How do Airbnb guests rate properties in general (are ratings generally high, low, or varied)?
 - How do the neighborhoods compare to each other?
 - Are there any neighborhoods that stand out as having particularly high or low ratings?
+
+**Your answer:** [Type your answer here. Use as much space as you need.]
 
 *After completing Exercise 5:*
 
@@ -272,7 +279,7 @@ Using both the visualization and summary statistics, describe the distribution o
 
 - **Error: "could not find function '%>%'"** → Load the tidyverse package
 - **`group_by()` not working as expected** → Make sure you use `summarise()` after `group_by()`
-- **Can't filter for top 5 neighborhoods** → Make sure you're using `top_5$neighbourhood` to reference the neighborhood names
+- **Can't filter for top 5 neighborhoods** → Make sure you're using `top_5$neighbourhood` to reference the neighborhood names, and that `top_5` was created with `top_5 <- edibnb %>% ...` (not just piped without an assignment)
 
 **Inline code issues:**
 
@@ -286,12 +293,11 @@ Using both the visualization and summary statistics, describe the distribution o
 
 ---
 
-
-**To submit:**
+# Submitting Your Work
 
 1. Click the **Knit** dropdown menu (next to the Knit button)
 2. Select **Knit to tufte_handout** to generate a PDF
 3. Download the PDF file from your Files pane
 4. Upload the PDF to Canvas
 
-**✓ Final check:** Visit your GitHub repo to confirm all your commits are there!
+**✓ Final check:** The PDF you upload to Canvas is what gets graded, so double-check it before submitting — make sure every code chunk ran without errors and all your answers and plots show up in the output. Also visit your GitHub repo to confirm your commits are there; both the PDF and the GitHub push are required, but grading is based on the PDF.
