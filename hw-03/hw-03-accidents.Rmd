@@ -56,7 +56,7 @@ Before we introduce the data, let's warm up with some simple exercises.
 2. **Knit** the document
 3. **Commit** your changes with message: `"Updated author name"`
 4. **Push** to GitHub
-5. Verify your changes are visible in your GitHub repo (check both .Rmd and .md files)
+5. Verify your changes are visible in your GitHub repo (check your `.Rmd` file)
 
 If anything is missing, commit and push again.
 
@@ -95,7 +95,7 @@ Your plot should include:
 **Hint:** Use `mutate()` with `if_else()`. The condition should check if `day_of_week` is in the vector `c("Saturday", "Sunday")`
 
 ```{r create-day-type, eval = FALSE}
-accidents %
+accidents <- accidents %>%
   mutate(day_of_week_type = if_else(
     ___ %in% c(___, ___), 
     "___", 
@@ -112,7 +112,7 @@ accidents %
 - Use `facet_wrap()` to create separate plots for weekday vs. weekend
 - Add `theme_minimal()` and appropriate labels
 
-```{r accident-density-plot, eval = FALSE}
+```{r accident-density-plot, eval = FALSE, fig.alt = "Density plot of accident times by severity, faceted by weekday versus weekend"}
 ggplot(data = ___, aes(x = ___, fill = ___)) +
   geom_density(alpha = ___) +
   facet_wrap(~___, ncol = ___) +
@@ -156,6 +156,8 @@ ggplot(data = ___, aes(x = ___, fill = ___)) +
 **Your visualization:**
 ```{r custom-visualization, eval = FALSE}
 # Your code here
+# Accessibility tip: add a fig.alt = "..." option to this chunk header
+# describing what your plot shows, for screen reader users.
 ```
 
 **What question does your visualization answer?**
@@ -172,7 +174,7 @@ ggplot(data = ___, aes(x = ___, fill = ___)) +
 
 ---
 
-## Common Errors and Troubleshooting
+# Common Errors and Troubleshooting
 
 **Data wrangling errors:**
 
@@ -194,6 +196,8 @@ ggplot(data = ___, aes(x = ___, fill = ___)) +
 
 ---
 
+# Submitting Your Work
+
 **To submit:**
 
 1. Click the **Knit** dropdown menu (next to the Knit button)
@@ -201,4 +205,4 @@ ggplot(data = ___, aes(x = ___, fill = ___)) +
 3. Download the PDF file from your Files pane
 4. Upload the PDF to Canvas
 
-**✓ Final check:** Visit your GitHub repo to confirm all your commits are there!
+**✓ Final check:** The PDF you upload to Canvas is the basis for grading — double-check it before submitting to make sure every code chunk ran without errors and all of your answers and plots show up in the output. Also visit your GitHub repo to confirm all your commits are pushed there; the GitHub push is required as your backup checkpoint, but grading is based on the PDF.
