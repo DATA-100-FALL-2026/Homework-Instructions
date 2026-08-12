@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Marleena Garris on Unsplash", eval = TRUE}
+```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Marleena Garris on Unsplash", fig.alt = "Photo of a student in a graduation cap and gown.", eval = TRUE}
 knitr::include_graphics("img/graduate.jpg")
 ```
 
@@ -62,6 +62,7 @@ Before we introduce the data, let's warm up with some simple exercises.
 5. Verify your changes are visible in your GitHub repo (check both .Rmd and .md files)
 
 If anything is missing, commit and push again.
+
 ## Packages
 
 We'll use the **tidyverse** package for much of the data wrangling and visualisation, the **scales** package for better formatting of labels on visualisations, and the data lives in the **fivethirtyeight** package. These packages are already installed for you. You can load them by running the following in your Console:
@@ -78,7 +79,7 @@ The data can be found in the **fivethirtyeight** package, and it's called `colle
 
 You can also take a quick peek at your data frame and view its dimensions with the `glimpse` function.
 
-```{r glimpse}
+```{r glimpse, eval = TRUE}
 glimpse(college_recent_grads)
 ```
 
@@ -97,7 +98,7 @@ In the next section we aim to answer these questions.
 
 In order to answer this question all we need to do is sort the data. We use the `arrange` function to do this, and sort it by the `unemployment_rate` variable. By default `arrange` sorts in ascending order, which is what we want here -- we're interested in the major with the *lowest* unemployment rate.
 
-```{r lowest-unemp}
+```{r lowest-unemp, eval = TRUE}
 college_recent_grads %>%
   arrange(unemployment_rate)
 ```
@@ -111,7 +112,7 @@ Note how easily we expanded our code with adding another step to our pipeline,
 with the pipe operator: `%>%`.
 ```
 
-```{r lowest-unemp-select}
+```{r lowest-unemp-select, eval = TRUE}
 college_recent_grads %>%
   arrange(unemployment_rate) %>%
   select(rank, major, unemployment_rate)
@@ -121,7 +122,7 @@ Ok, this is looking better, but do we really need to display all those decimal p
 
 We can use the `percent()` function to clean up the display a bit.
 
-```{r}
+```{r percent-format, eval = TRUE}
 college_recent_grads %>%
   arrange(unemployment_rate) %>%
   select(rank, major, unemployment_rate) %>%
@@ -136,7 +137,7 @@ To answer such a question we need to arrange the data in descending order. For e
 The `desc` function specifies that we want `unemployment_rate` in descending order.
 ```
 
-```{r}
+```{r highest-unemp, eval = TRUE}
 college_recent_grads %>%
   arrange(desc(unemployment_rate)) %>%
   select(rank, major, unemployment_rate)
@@ -169,7 +170,7 @@ We use the `ggplot()` function to do this. The first argument is the data frame,
 
 Let's start simple and take a look at the distribution of all median incomes, without considering the major categories.
 
-```{r fig,height=2}
+```{r income-histogram, fig.height = 2, eval = TRUE, fig.alt = "Histogram of median income across all majors in the dataset, showing a right-skewed distribution with most majors clustered at lower incomes and a long tail toward a few higher-earning majors."}
 ggplot(data = college_recent_grads, mapping = aes(x = median)) +
   geom_histogram()
 ```
@@ -184,16 +185,18 @@ This is telling us that we might want to reconsider the binwidth we chose for ou
 
 3.  Try binwidths of \$1000 and \$5000 and choose one. Explain your reasoning for your choice. Note that the binwidth is an argument for the `geom_histogram` function. So to specify a binwidth of \$1000, you would use `geom_histogram(binwidth = 1000)`.
 
-```{r binwidth-1000, eval = FALSE}
+**Reminder:** once you fill in a chunk and change it to `eval = TRUE`, also fill in `fig.alt = "___"` in the chunk header with a short description of what your histogram shows.
+
+```{r binwidth-1000, eval = FALSE, fig.alt = "___"}
 # Try binwidth = 1000
 ```
-```{r binwidth-5000}
+```{r binwidth-5000, eval = FALSE, fig.alt = "___"}
 # Try binwidth = 5000
 ```
 
 We can also calculate summary statistics for this distribution using the `summarise` function:
 
-```{r}
+```{r income-summary, eval = TRUE}
 college_recent_grads %>%
   summarise(min = min(median), max = max(median),
             mean = mean(median), med = median(median),
@@ -208,7 +211,7 @@ college_recent_grads %>%
 
 **Hint:** Add `facet_wrap(~major_category)` to your ggplot code.
 
-```{r income-by-category, eval = FALSE}
+```{r income-by-category, eval = FALSE, fig.alt = "___"}
 ggplot(data = ___, mapping = aes(x = ___)) +
   geom_histogram(binwidth = ___) +
   facet_wrap(~___)
@@ -223,7 +226,7 @@ Fill-in the blanks in the code below and change eval = TRUE to test your output.
 ```
 
 
-```{r eval=FALSE}
+```{r highest-income-category, eval = FALSE}
 college_recent_grads %>%
   group_by(major_category) %>%
   summarise(___ = ___(median)) %>%
@@ -232,7 +235,7 @@ college_recent_grads %>%
 
 7.  Which major category is the least popular in this sample? To answer this question we use a new function called `count`, which first groups the data and then counts the number of observations in each category (see below). Add to the pipeline appropriately to arrange the results so that the major with the lowest observations is on top.
 
-```{r}
+```{r count-category, eval = TRUE}
 college_recent_grads %>%
   count(major_category)
 ```
@@ -245,7 +248,7 @@ One of the sections of the [FiveThirtyEight story](https://fivethirtyeight.com/f
 
 First, let's create a new vector called `stem_categories` that lists the major categories that are considered STEM fields.
 
-```{r}
+```{r stem-categories, eval = TRUE}
 stem_categories <- c("Biology & Life Science",
                      "Computers & Mathematics",
                      "Engineering",
@@ -254,12 +257,12 @@ stem_categories <- c("Biology & Life Science",
 
 Then, we can use this to create a new variable in our data frame indicating whether a major is STEM or not.
 
-```{r}
+```{r add-major-type, eval = TRUE}
 college_recent_grads <- college_recent_grads %>%
   mutate(major_type = ifelse(major_category %in% stem_categories, "stem", "not stem"))
 ```
 
-Let's unpack this: with `mutate` we create a new variable called `major_type`, which is defined as `"stem"` if the `major_category` is in the vector called `stem_categories` we created earlier, and as `"not stem"` otherwise.
+Let's unpack this: with `mutate` we create a new variable called `major_type`, which is defined as `"stem"` if the `major_category` is in the vector called `stem_categories` we created earlier, and as `"not stem"` otherwise. Notice the `college_recent_grads <-` at the start — that saves the new column back into `college_recent_grads`. If it were missing, `major_type` would print once and then disappear, and Exercise 8 below would fail with a "column not found" error.
 
 `%in%` is a **logical operator**. Other logical operators that are commonly used are
 
@@ -278,7 +281,7 @@ Let's unpack this: with `mutate` we create a new variable called `major_type`, w
 
 We can use the logical operators to also `filter` our data for STEM majors whose median earnings is less than median for all majors' median earnings, which we found to be \$36,000 earlier.
 
-```{r}
+```{r stem-below-36k, eval = TRUE}
 college_recent_grads %>%
   filter(
     major_type == "stem",
@@ -306,7 +309,7 @@ college_recent_grads %>%
 
 9.  Create a scatterplot of median income vs. proportion of women in that major, coloured by whether the major is in a STEM field or not. Describe the association between these three variables.
 
-```{r women-income-stem, eval = FALSE}
+```{r women-income-stem, eval = FALSE, fig.alt = "___"}
 ggplot(data = college_recent_grads, aes(x = ___, y = ___, color = ___)) +
   geom_point() +
   labs(
@@ -333,6 +336,8 @@ ggplot(data = college_recent_grads, aes(x = ___, y = ___, color = ___)) +
 **Your analysis (code and visualization/summary statistics):**
 ```{r custom-analysis}
 # Your code here
+# If your analysis includes a plot, add fig.alt = "..." to this chunk header
+# describing what the plot shows.
 ```
 
 **Your findings (3-4 sentences):**
@@ -345,7 +350,7 @@ ggplot(data = college_recent_grads, aes(x = ___, y = ___, color = ___)) +
 
 **Data manipulation errors:**
 
-- **Error: "object 'major_type' not found"** → Make sure you ran the `mutate()` code that creates the `major_type` variable
+- **Error: "object 'major_type' not found"** → Make sure you ran the `mutate()` code that creates the `major_type` variable, and that it reassigns back with `college_recent_grads <- college_recent_grads %>% mutate(...)`
 - **`arrange()` not sorting correctly** → Use `desc()` for descending order: `arrange(desc(variable))`
 - **`filter()` with multiple conditions not working** → Make sure conditions are separated by commas or use `&`
 
@@ -378,4 +383,5 @@ ggplot(data = college_recent_grads, aes(x = ___, y = ___, color = ___)) +
 5. Download the PDF file from your Files pane
 6. Upload the PDF to Canvas
 
-**✓ Final check:** Visit your GitHub repo to confirm all your commits are there!
+**✓ Final check:** Visit your GitHub repo to confirm all your commits are there — this is your checkpoint/backup. The PDF you upload to Canvas is the basis for grading, so double-check it's complete and readable before submitting.
+
