@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Daniel Cheung on Unsplash", eval = TRUE}
+```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Daniel Cheung on Unsplash", fig.alt = "Photo of colorful Lego bricks.", eval = TRUE}
 knitr::include_graphics("img/daniel-cheung-ZqqlOZyGG7g-unsplash.jpg")
 ```
 
@@ -238,7 +238,7 @@ You'll need to:
 
 9.  Come up with a question you want to answer using these data, and write it down. Then, create a data visualization that answers the question, and explain how your visualization answers the question.
 
-Be sure to include your reaearch quesiton, the variables you'll need to use to answer the question, the type of plot that will answer the question along with the code, and 2-3 sentences interpreting your results. 
+Be sure to include your research question, the variables you'll need to use to answer the question, the type of plot that will answer the question along with the code, and 2-3 sentences interpreting your results. **Give your plot a title, clear axis labels, and a `fig.alt` description in the chunk header** — just like the plots you've made in earlier assignments and labs.
 
 Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
