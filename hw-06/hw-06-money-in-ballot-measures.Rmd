@@ -1,0 +1,277 @@
+---
+title: "HW 06 - Money in Ballot Measures"
+author: "[Your Name]"
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+  tufte::tufte_handout:
+    latex_engine: xelatex
+    highlight: pygments
+    keep_tex: true
+    citation_package: natbib
+link-citations: true
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE,
+  out.width = "80%",
+  fig.asp = 0.618,
+  fig.width = 10,
+  dpi = 300
+)
+```
+
+Every election cycle, some of the most expensive political fights in the country aren't between candidates at all - they're over *ballot measures*: propositions, initiatives, and referenda that voters decide on directly. Campaigns to support or oppose these measures can raise hundreds of millions of dollars, and tracking who's funding which side is exactly the kind of question data journalists and political scientists ask all the time.
+
+```{marginfigure}
+Source: [Ballotpedia - Ballot measure campaign finance](https://ballotpedia.org/Ballot_measure_campaign_finance,_2024)^[Ballotpedia tracks campaign finance for ballot measures nationwide, compiled from state campaign finance disclosures.]
+```
+
+In this assignment we will scrape and work with data on **support and opposition contributions to state ballot measures**. First, we'll get data for the 2024 election cycle. Then, you'll use the same approach to get data from previous cycles so we can examine trends over time.
+
+In order to complete this assignment you will need a Chrome browser with the Selector Gadget extension installed.
+
+# Getting started
+
+Go to the course GitHub organization and locate your homework repo, clone it in RStudio and open the R Markdown document. Knit the document to make sure it compiles without errors.
+
+## Warm up
+
+Before we introduce the data, let's warm up with some simple exercises. Update the YAML of your R Markdown file with your information, knit, commit, and push your changes. Make sure to commit with a meaningful commit message. Then, go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
+
+## Packages
+
+We'll use the **tidyverse** package for much of the data wrangling and visualization, the **robotstxt** package to check if we're allowed to scrape the data, the **rvest** package for data scraping, and the **scales** package for better formatting of labels on visualizations. These packages are already installed for you.
+```{r packages, eval = TRUE}
+library(tidyverse)
+library(robotstxt)
+library(rvest)
+library(scales)
+```
+
+## Data
+
+This assignment does not come with any prepared datasets. Instead you'll be scraping the data!
+
+# Exercises
+
+## Data collection via web scraping
+
+The data come from [Ballotpedia](https://ballotpedia.org/), a nonpartisan online encyclopedia of American politics and elections. Ballotpedia maintains a page for each even-numbered election year that lists every statewide ballot measure, split into two tables (citizen-initiated measures and legislative/other referred measures) that share the exact same columns: the measure's name, total contributions, contributions in support, contributions in opposition, and the outcome.
+
+Before getting started, let's check that a bot has permission to access pages on this domain.
+```{r paths-allowed, warning=FALSE, eval = TRUE}
+paths_allowed("https://ballotpedia.org")
+```
+
+**What this means:** If the result is `TRUE`, we have permission to scrape. If `FALSE`, we should not proceed.
+
+Our goal is to scrape data for ballot measure contributions in every election year Ballotpedia has data for using this consistent URL pattern (2016 through 2024). Since that means repeating a task many times, let's first write a function that works on one page. Confirm it works on a few others. Then iterate it over pages for all years.
+
+Complete the following set of steps in the `scrape-measures.R` file in the `scripts` folder of your repository. This file already contains some starter code to help you out.
+
+Exercise 1. Write a function called `scrape_measures()` that scrapes information from a Ballotpedia webpage for ballot measure contributions in a given year. This function should
+
+- have one input: the URL of the webpage, and should return a data frame.
+- use a CSS selector that matches **both** contribution tables on the page (they share identical columns), and combine them into a single data frame with `bind_rows()`.
+- rename the scraped columns using `snake_case` naming: `measure`, `total`, `support`, `opposition`, `outcome`.
+- add a new column to the data frame for `year`. We will want this information when we ultimately have data from all years, so this is a good time to keep track of it. Our function doesn't take a year argument, but the year is embedded in the URL, so we can extract it out of there and add it as a new column. Use the `str_sub()` function to extract the last 4 characters from the URL. You will probably want to look at the help for this function to figure out how to specify "last 4 characters."
+
+Exercise 2. Define the URLs for 2024, 2020, and 2016 contributions. Then, test your function using these URLs as inputs. Does the function seem to do what you expected it to do?
+
+Exercise 3. Construct a vector called `urls` that contains the URLs for each webpage that contains information on ballot measure contributions for a given year. Ballot measures are decided in general elections, so only even years exist, and Ballotpedia's URL naming pattern is only consistent from 2016 onward - earlier years use a different page-naming convention, so we'll stick to 2016-2024 (5 election cycles).
+
+Exercise 4. Map the `scrape_measures()` function over `urls` in a way that will result in a data frame called `measures_all`.
+
+Exercise 5. Write the data frame to a csv file called `measures-all.csv` in the `data` folder.
+
+*✅⬆️ If you haven't yet done so, now is definitely a good time to commit and push your changes to GitHub with an appropriate commit message (e.g. "Data scraping complete"). Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+
+Complete the following set of steps in this `hw-06.Rmd` file.
+
+- In your R Markdown file, load `measures-all.csv` and report its number of observations and variables using inline code.
+
+```{r load-data}
+measures_all <- read_csv("data/measures-all.csv")
+```
+
+The data on ballot measure contributions has `r ___` observations and `r ___` variables.
+
+---
+
+## Data cleaning
+
+In this section we clean the `measures_all` data frame to prepare it for analysis and visualization. We have three goals in data cleaning:
+
+- Separate the `measure` column into two so the measure's short identifier (e.g. "California Proposition 27") and its full descriptive title appear in different columns.
+- Convert contribution amounts in `total`, `support`, and `opposition` from character strings to numeric values.
+- Recode the `outcome` column, which currently stores a checkmark/x symbol, into readable text labels.
+
+The following exercises walk you through how to make these fixes to the data.
+
+Exercise 6. Use the `separate()` function to separate `measure` into `measure_id` and `title` columns. Note that the identifier and title are separated by a comma (`,`), and note that some titles themselves contain additional commas - in these cases we want to only split the value at the *first* occurrence of `,`. This can be accomplished by setting the `extra` argument to `"merge"` so that the cell is split into only 2 segments, e.g. we want `"California Proposition 27, Legalize Sports Betting and Revenue for Homelessness Prevention Fund Initiative (2022)"` to be split into `"California Proposition 27"` and `"Legalize Sports Betting and Revenue for Homelessness Prevention Fund Initiative (2022)"`. (See help for `separate()` for more on this.) End your code chunk by printing out the top 10 rows of your data frame.
+```{r separate-measure}
+measures_all <- measures_all %>%
+  separate(
+    col   = ___,
+    into  = c("___", "___"),
+    sep   = "___",
+    extra = "___"
+  )
+
+measures_all
+```
+
+**Note:** A few measure names don't contain a comma at all, so `title` will come back as `NA` for those rows - that's expected, not a bug.
+
+Exercise 7. Remove the character strings including `$` and `,` signs in the `total`, `support`, and `opposition` columns and convert these columns to numeric. End your code chunk by printing out the top 10 rows of your data frame. A couple hints to help you out:
+
+- The `$` character is a special character so it will need to be escaped.
+- Some contribution totals are in the hundreds of millions (e.g. one 2022 California measure raised over $400,000,000 in total contributions). This means you'll need to remove *all* occurrences of `,` in a given string, which you can do by using `str_remove_all()` instead of `str_remove()`.
+```{r clean-dollars}
+measures_all <- measures_all %>%
+  mutate(
+    total      = as.numeric(str_remove_all(___, "___")),
+    support    = as.numeric(str_remove_all(___, "___")),
+    opposition = as.numeric(str_remove_all(___, "___"))
+  )
+
+measures_all
+```
+
+Exercise 8. The `outcome` column currently stores a checkmark (✔) for measures that passed and an x (✖) for measures that failed - and it's blank for a handful of measures that were removed from the ballot or never finalized. Relying on a symbol alone to convey pass/fail isn't accessible, so let's recode it into a readable factor. Use `case_when()` inside `mutate()` to recode `outcome` into `"Passed"`, `"Failed"`, or `NA` (for anything that isn't one of the two symbols).
+```{r recode-outcome}
+measures_all <- measures_all %>%
+  mutate(
+    outcome = case_when(
+      outcome == "___" ~ "Passed",
+      outcome == "___" ~ "Failed",
+      TRUE ~ NA_character_
+    )
+  )
+
+count(measures_all, outcome)
+```
+
+🧶 ✅ ⬆️ *Now is a good time to knit your document, commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+
+---
+
+## Data visualization and interpretation
+
+Exercise 9. Create a line plot of total contributions **in support of** and **in opposition to** ballot measures, summed across all measures, for each year from 2016 to 2024. Once you have made the plot, write a brief interpretation of what the graph reveals. A few hints to help you out:
+
+- Calculate the sum of `support` contributions and the sum of `opposition` contributions for each year by using a sequence of `group_by()` then `summarise()`.
+- You'll likely want to `pivot_longer()` your summarized data so that "support" and "opposition" become levels of a single grouping variable, rather than two separate columns - that's what lets you map a single `color` aesthetic to both lines at once.
+- Make a plot of total contributions (y-axis) by year (x-axis) where two lines, identified by different colors, represent support and opposition.
+
+```{r support-opposition-plot, fig.alt = "Line plot comparing total support and opposition contributions to ballot measures from 2016 to 2024."}
+measures_all %>%
+  group_by(___) %>%
+  summarise(
+    support    = sum(___, na.rm = TRUE),
+    opposition = sum(___, na.rm = TRUE)
+  ) %>%
+  pivot_longer(
+    cols      = c(___, ___),
+    names_to  = "side",
+    values_to = "amount"
+  ) %>%
+  ggplot(aes(x = ___, y = ___, color = ___)) +
+  geom_line(linewidth = 1) +
+  geom_point() +
+  scale_y_continuous(labels = label_dollar(scale = 1e-6, suffix = "M")) +
+  labs(
+    title = "___",
+    x     = "___",
+    y     = "___",
+    color = "___"
+  )
+```
+
+```{r target-plot-9, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Target: your line plot should show a similar overall shape.", fig.alt = "Reference line plot showing support contributions rising sharply by 2024 while opposition contributions stay flatter across all five cycles."}
+knitr::include_graphics("img/target-support-vs-opposition.png")
+```
+
+**Note:** The figure you create might look slightly different than this one if the data on the website has been updated recently.
+
+**Your interpretation:**
+
+
+
+Exercise 10. Recreate the following visualization: a horizontal bar chart of the 10 most expensive ballot measure campaigns (by total contributions) across all five cycles. Once you have made the plot, write a brief interpretation of what the graph reveals. You will need to make use of functions from the **scales** package for the dollar-formatted axis labels.
+
+```{r target-plot-10, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Target: recreate this chart using your own data.", fig.alt = "Reference horizontal bar chart of the 10 most expensive ballot measure campaigns, led by a 2022 California sports betting measure at over 400 million dollars."}
+knitr::include_graphics("img/target-top10-measures.png")
+```
+
+```{r top10-plot, fig.alt = "Horizontal bar chart of the 10 most expensive ballot measure campaigns by total contributions, 2016 to 2024."}
+measures_all %>%
+  slice_max(___, n = ___) %>%
+  ggplot(aes(x = ___, y = fct_reorder(measure_id, ___))) +
+  geom_col(fill = "___") +
+  scale_x_continuous(labels = label_dollar(scale = 1e-6, suffix = "M")) +
+  labs(
+    title = "___",
+    x     = "___",
+    y     = "___"
+  )
+```
+
+**Your interpretation:**
+
+
+
+🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
+
+---
+
+## Common Errors and Troubleshooting
+
+**Web scraping errors (in `scrape-measures.R`):**
+
+- **Error: "could not find function"** → Make sure you loaded `rvest`: `library(rvest)`
+- **`html_elements()` returns 0 or more than 2 tables** → Double-check your CSS selector with SelectorGadget; the two contribution tables share a specific combination of classes that no other table on the page has
+- **HTTP errors or empty results** → The website may be down; try again in a few minutes
+- **A year is missing rows or errors out** → Confirm the URL for that year opens correctly in a browser first
+
+**Data cleaning errors:**
+
+- **`separate()` warnings** → Expected! Some measure names don't have a comma, so `title` becomes `NA` for those rows
+- **`as.numeric()` returns `NA` for everything** → Check that you removed both `$` and `,` before converting - a leftover `$` or `,` will make the whole string non-numeric
+- **`case_when()` outcome recode doesn't match anything** → The symbols are ✔ and ✖, not a plain checkmark/x you type on your keyboard - copy them directly from the console output of `count(measures_all, outcome)` before cleaning
+
+**Visualization errors:**
+
+- **`pivot_longer()` error about columns not found** → Make sure you're referencing the actual column names from your `summarise()` step (`support` and `opposition`), not `total`
+- **Dollar labels look wrong (e.g. `$450000000M`)** → Check the `scale` argument in `label_dollar()` - `scale = 1e-6` converts raw dollars to millions before adding the `M` suffix
+- **Bars in Exercise 10 are in a strange order** → Use `fct_reorder()` on the y-axis variable so bars sort by contribution amount instead of alphabetically
+
+**General issues:**
+
+- **Can't find CSV file** → Make sure you ran all the steps in `scrape-measures.R` and saved the data before switching to this Rmd
+- **Code chunk not running** → Make sure you changed `eval = FALSE` to `eval = TRUE` (or removed it) after filling in the blanks
+- **Warnings about NA introduced by coercion** → Expected in a few spots; this dataset has some genuinely messy real-world rows (a few measures were later pulled from the ballot and never got a recorded outcome)
+
+---
+
+**Final check:**
+
+- ✅ `scrape-measures.R` runs start to finish and produces `data/measures-all.csv`
+- ✅ All 10 exercises in this Rmd completed, with written interpretations for Exercises 9 and 10
+- ✅ Everything committed and pushed to GitHub
+
+**To submit to Canvas:**
+
+Step 1. In RStudio, click the **Knit** dropdown menu (next to the Knit button)
+
+Step 2. Select **Knit to tufte_handout** to generate a PDF
+
+Step 3. Download the PDF file from the Files pane
+
+Step 4. Upload the PDF to Canvas
+
+**✓ Final Checkpoint:** Visit your GitHub repo one more time to confirm all your work is there. We will grade what we see in your repo on GitHub!
