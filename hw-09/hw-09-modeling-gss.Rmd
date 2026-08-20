@@ -121,7 +121,7 @@ It's important that you don't recode the NAs, just the remaining levels.
 1.  Re-level the `advfront` variable such that it has two levels: `Strongly agree` and "`Agree"` combined into a new level called `agree` and the remaining levels (except `NA`s) combined into "`Not agree"`. Then, re-order the levels in the following order: `"Agree"` and `"Not agree"`. Finally, `count()` how many times each new level appears in the `advfront` variable.
 
 ```{r recode-advfront, eval = FALSE}
-gss16 %
+gss16 <- gss16 %>%
   mutate(advfront = case_when(
     advfront %in% c("Strongly agree", "Agree") ~ ___,
     is.na(advfront) ~ ___,
@@ -129,7 +129,7 @@ gss16 %
   ))
 
 # Reorder levels
-gss16 %
+gss16 <- gss16 %>%
   mutate(advfront = factor(advfront, levels = c(___, ___)))
 
 # Count
@@ -200,7 +200,7 @@ gss16_spec <- ___() %>%
   set_engine("___")
 ```
 
-7.  Build a workflow that uses the recipe you defined (`gss16_rec`) and the model you specified (`gss16_spec`). Name this workflow `gss16_wflow_1`. Sample code is provided below.
+7.  Build a workflow that uses the recipe you defined (`gss16_rec_1`) and the model you specified (`gss16_spec`). Name this workflow `gss16_wflow_1`. Sample code is provided below.
 
 ```{r eval=FALSE}
 gss16_wflow_1 <- workflow() %>%
@@ -240,6 +240,8 @@ collect_metrics(___)
 
 11. Fit both models to the testing data, plot the ROC curves for the predictions for both models, and calculate the areas under the ROC curve. Does your answer to the previous exercise hold for the testing data as well? Explain your reasoning. Note: If you haven't yet done so, you'll need to first train your workflows on the training data with the following, and then use these fit objects to calculate predictions for the test data.
 
+> **Putting it together:** If Model 2 (without `wrkstat`) performs about as well as Model 1 on the testing data, that's a meaningful result, not a disappointing one. It suggests `wrkstat` wasn't adding real predictive information — it was just adding complexity. A simpler model that generalizes just as well is generally preferable to a more complex one that doesn't, since the complex model is more prone to overfitting patterns specific to the training data. Keep this idea in mind: "simpler but equally good" is a legitimate modeling win, not a consolation prize.
+
 ```{r eval=FALSE}
 gss16_fit_1 <- gss16_wflow_1 %>%
   fit(gss16_train)
@@ -262,12 +264,16 @@ Answers to this question are stored in the `harass5` variable in our dataset.
 
 13. Describe how bootstrapping can be used to estimate the proportion of Americans who have been harassed by their superiors or co-workers at their job.
 
+> **What a complete answer covers:** A full description should walk through all three steps: (1) draw a large number of resamples from the original sample, each the same size as the original sample and drawn *with replacement*; (2) calculate the proportion of "Yes" responses within each resample; (3) use the spread of proportions across all the resamples to estimate how much our proportion would vary if we could have drawn many different samples from the population. Simply saying "resample with replacement" isn't enough — explain *why* that lets us estimate uncertainty without needing to survey the population again.
+
 14. Calculate a 95% bootstrap confidence interval for the proportion of Americans who have been harassed by their superiors or co-workers at their job. Interpret this interval in context of the data.
 
 **Hint:** Use the **infer** package workflow: `specify()` %>% `generate()` %>% `calculate()` %>% `get_confidence_interval()`
 ```{r bootstrap-ci}
 # Your code here
 ```
+
+> **Interpretation template:** Follow the same phrasing pattern from earlier confidence interval work: "We are 95% confident that the true proportion of American adults who have experienced workplace harassment by a superior or co-worker is between ___ and ___." Avoid saying there's a "95% probability" the true proportion falls in this range — that's a common but incorrect phrasing. The 95% describes the *method's* long-run success rate, not a probability about this one interval.
 
 **Interpretation:** 
 
