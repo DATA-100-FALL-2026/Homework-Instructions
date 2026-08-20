@@ -117,6 +117,8 @@ In 2016, the GSS added a new question on harassment at work. The question is phr
 
 Answers to this question are stored in the `harass5` variable in our dataset.
 
+Questions like this one are sensitive, and how a survey measures them affects how trustworthy the resulting statistic is. As you work through Questions 1-2, keep in mind that the percentage you calculate is only as good as the survey design and response behavior behind it (e.g. who feels comfortable answering, who skips the question, how the question is worded).
+
 1.  What are the possible responses to this question and how many respondents chose each of these answers?
 
 2.  What percent of the respondents for whom this question is applicable\
@@ -136,7 +138,7 @@ The 2016 GSS also asked respondents how many hours and minutes they spend on ema
 
 3.  Create a new variable called `email` that combines these two variables to reports the number of minutes the respondents spend on email weekly.
 
-4.  Visualize the distribution of this new variable. Find the mean and the median number of minutes respondents spend on email weekly. Is the mean or the median a better measure of the typical among of time Americans spend on email weekly? Why?
+4.  Visualize the distribution of this new variable. Find the mean and the median number of minutes respondents spend on email weekly. Is the mean or the median a better measure of the typical amount of time Americans spend on email weekly? Why?
 
 5.  Create another new variable, `snap_insta` that is coded as "Yes" if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and "No" if not. If the recorded value was `NA` for both of these questions, the value in your new variable should also be `NA`.
 
@@ -160,7 +162,11 @@ The 2016 GSS also asked respondents how many hours and minutes they spend on ema
 
 8.  Fit a model predicting `email` (number of minutes per week spent on email) from `educ` (number of years of education), `wrkstat`, and `snap_insta`. Interpret the slopes for each of these variables.
 
+**Hint:** A complete interpretation of a slope states (a) the units, (b) the direction of the association, and (c) for a categorical predictor like `wrkstat` or `snap_insta`, which baseline level the comparison is relative to. For example: "Holding `wrkstat` and `snap_insta` fixed, each additional year of education is associated with an estimated change of ___ minutes per week spent on email." For `wrkstat`, state the comparison group explicitly (e.g., "...compared to respondents who are working full time").
+
 9.  Create a predicted values vs. residuals plot for this model. Are there any issues with the model? If yes, describe them.
+
+**Hint:** A residual plot with no major issues shows points scattered randomly around the horizontal line at 0, with roughly constant spread across the range of fitted values. Watch for: a curved pattern (suggests the relationship isn't linear), a funnel shape where spread grows or shrinks with fitted values (suggests non-constant variance), or a small number of points far from the rest (potential outliers).
 
 Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
 
@@ -202,7 +208,7 @@ And possible responses to this question are Extremely liberal, Liberal, Slightly
 # Your code here
 ```
 
-11. In a new variable, recode `polviews` such that Extremely liberal, Liberal, and Slightly liberal, are mapped to `"Liberal"`, and Slghtly conservative, Conservative, and Extrmly conservative disagree are mapped to `"Conservative"`. The remaining levels can be left as is. Make sure that the levels are in a reasonable order. Don't overwrite the existing `polviews`, instead pick a different, informative name for your new variable.
+11. In a new variable, recode `polviews` such that Extremely liberal, Liberal, and Slightly liberal, are mapped to `"Liberal"`, and Slghtly conservative, Conservative, and Extrmly conservative are mapped to `"Conservative"`. The remaining levels can be left as is. Make sure that the levels are in a reasonable order. Don't overwrite the existing `polviews`, instead pick a different, informative name for your new variable.
 
 **Note:** Pay attention to spelling - the data has "Slghtly conservative" and "Extrmly conservative" (abbreviated).
 
@@ -213,6 +219,8 @@ And possible responses to this question are Extremely liberal, Liberal, Slightly
 ```
 
 12. Create a visualization that displays the relationship between these two new variables and interpret it.
+
+**Putting it all together:** People sometimes claim that political conservatives are less supportive of government-funded science research than liberals or moderates. Based on the relationship you found between your recoded `polviews` and `advfront` variables, does the 2016 GSS data support, complicate, or contradict this claim? Point to specific patterns in your visualization to justify your answer.
 
 Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
@@ -261,3 +269,4 @@ Once you decide that you are done with the homework, choose the knit drop down a
 - **Too many categories cluttering the plot** → Filter out NAs and "Don't know" responses before plotting
 
 - **Can't see the relationship** → Try different plot types or use `position = "fill"` for proportions
+
