@@ -88,6 +88,7 @@ The data include daily bike rental counts (by members and casual users) of Capit
 - `y ~ x1 + x2` - Multiple predictors
 - `y ~ x1 * x2` - Include interaction between x1 and x2
 - Adjusted R² is found in the model summary output
+- To write out a linear model equation from `summary(model)` output, use the format: $\widehat{y} = b_0 + b_1x_1 + b_2x_2 + \dots$, substituting the `Estimate` column values for $b_0, b_1, b_2, \dots$
 
 **Tip:** For questions 1-6, save your recoded/calculated variables back to the dataset so you can use them in later questions.
 
@@ -102,6 +103,8 @@ The data include daily bike rental counts (by members and casual users) of Capit
 3.  Recode the `yr` variable to be a factor with levels 2011 and 2012, with 2011 as the baseline level.
 
 4.  Recode the `weathersit` variable as 1 - clear, 2 - mist, 3 - light precipitation, and 4 - heavy precipitation, with clear as the baseline.
+
+Several variables in this dataset — temperature, feeling temperature, humidity, and windspeed — are stored on a normalized 0-1 scale rather than in their original units. This is common when a dataset combines variables with very different natural ranges (temperature in °C, humidity as a percentage, windspeed in m/s), so that no single variable's scale dominates. Exercise 5 asks you to reconstruct the original, real-world values so that your interpretations later on are in units you actually recognize.
 
 5.  Calculate raw temperature, feeling temperature, humidity, and windspeed as their values given in the dataset multiplied by the maximum raw values stated in the codebook for each variable. Instead of writing over the existing variables, create new ones with concise but informative names.
 
@@ -136,7 +139,7 @@ dcbikeshare %>%
       title = "Bike rentals in DC, 2011 and 2012",
       subtitle = "Warmer temperatures associated with more bike rentals",
       x = "Date",
-      y = "Bike renrals",
+      y = "Bike Rentals",
       color = "Temperature (C)"
     ) +
   theme_minimal()
@@ -156,19 +159,31 @@ Knit, *commit, and push your changes to GitHub with an appropriate commit messag
 
 ## Modeling
 
-9.  Fit a linear model predicting total daily bike rentals from daily temperature. Write the linear model, interpret the slope and the intercept in context of the data, and determine and interpret the $R^2$.
+9.  Fit a linear model predicting total daily bike rentals from daily temperature.
 
-10. Fit another linear model predicting total daily bike rentals from daily feeling temperature. Write the linear model, interpret the slope and the intercept in context of the data, and determine and interpret the $R^2$. Is temperature or feeling temperature a better predictor of bike rentals? Explain your reasoning.
+    **Write your answer:** State the linear model, interpret the slope and the intercept in context of the data, and determine and interpret the $R^2$.
 
-11. Fit a model predicting total daily bike rentals from season, year, whether the day is holiday or not, whether the day is a workingday or not, the weather category, temperature, feeling temperature, humidity, and windspeed, as well as the interaction between feeling temperature and holiday. Record adjusted $R^2$ of the model.
+10. Fit another linear model predicting total daily bike rentals from daily feeling temperature.
+
+    **Write your answer:** State the linear model, interpret the slope and the intercept in context of the data, and determine and interpret the $R^2$. Is temperature or feeling temperature a better predictor of bike rentals? Explain your reasoning.
+
+11. Fit a model predicting total daily bike rentals from season, year, whether the day is holiday or not, whether the day is a workingday or not, the weather category, temperature, feeling temperature, humidity, and windspeed, as well as the interaction between feeling temperature and holiday.
+
+    **Write your answer:** Record the adjusted $R^2$ of this model, then compare it to the $R^2$ values from your models in Exercises 9 and 10. Which of the three models explains the most variation in bike rentals, and why did adding more predictors change the result?
 
 12. Your model in Question 11 includes an interaction between feeling temperature and holiday. Write out the linear model equation for holidays and the linear model equation for non-holidays separately (substitute the appropriate values for the holiday variable). Is the slope of temperature the same or different for these two models? How about the slope for feeling temperature? Explain why based on the interaction term.
 
-13. Interpret the slopes of season and feeling temperature in the context of bike rentals. If the slopes are different for holidays and non-holidays, make sure to interpret both. If the variable has multiple levels, make sure you interpret all of the slope coefficients associated with it.
+13. Consider the slopes of season and feeling temperature in your model from Exercise 11.
 
-14. Interpret the intercept in the context of bike rentals. If the intercept is different for holidays and non-holidays, make sure to interpret both.
+    **Write your answer:** Interpret these slopes in the context of bike rentals. If the slopes are different for holidays and non-holidays, make sure to interpret both. If the variable has multiple levels, make sure you interpret all of the slope coefficients associated with it.
 
-15. According to this model, assuming everything else is the same, in which season does the model predict total daily bike rentals to be highest and which to be the lowest?
+14. Consider the intercept in your model from Exercise 11.
+
+    **Write your answer:** Interpret the intercept in the context of bike rentals. If the intercept is different for holidays and non-holidays, make sure to interpret both.
+
+15. Consider your model from Exercise 11, assuming everything else is the same.
+
+    **Write your answer:** According to this model, in which season does the model predict total daily bike rentals to be highest and which to be the lowest?
 
 Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
