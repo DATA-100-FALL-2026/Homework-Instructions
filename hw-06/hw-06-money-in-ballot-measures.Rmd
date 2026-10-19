@@ -1,7 +1,7 @@
 ---
 title: "HW 06 - Money in Ballot Measures"
 author: "[Your Name]"
-output: 
+output:
   tufte::tufte_html:
     css: ../lab.css
     tufte_variant: "envisioned"
@@ -34,6 +34,10 @@ In this assignment we will scrape and work with data on **support and opposition
 
 In order to complete this assignment you will need a Chrome browser with the Selector Gadget extension installed.
 
+```{marginfigure}
+Why local files instead of a live scrape? Ballotpedia blocks automated requests coming from cloud servers, which is what JupyterHub/RStudio Cloud runs on - the same kind of block you may have run into with IMDB in other assignments. The five years of HTML you need are already saved as local files in your repo's `data-raw` folder, and `scrape-measures.R` reads from those instead of the live site. Everything else about the process - SelectorGadget, CSS selectors, `html_table()`, `bind_rows()` - works exactly the same; the only thing that changes is what you hand `read_html()` (a file path instead of a web address).
+```
+
 # Getting started
 
 Go to the course GitHub organization and locate your homework repo, clone it in RStudio and open the R Markdown document. Knit the document to make sure it compiles without errors.
@@ -44,17 +48,24 @@ Before we introduce the data, let's warm up with some simple exercises. Update t
 
 ## Packages
 
-We'll use the **tidyverse** package for much of the data wrangling and visualization, the **robotstxt** package to check if we're allowed to scrape the data, the **rvest** package for data scraping, and the **scales** package for better formatting of labels on visualizations. These packages are already installed for you.
+We'll use the **tidyverse** package for much of the data wrangling and visualization, the **rvest** package for data scraping, and the **scales** package for better formatting of labels on visualizations. These packages are already installed for you.
 ```{r packages, eval = TRUE}
 library(tidyverse)
-library(robotstxt)
 library(rvest)
 library(scales)
 ```
 
 ## Data
 
-This assignment does not come with any prepared datasets. Instead you'll be scraping the data!
+This assignment does not come with any prepared datasets for you to load directly - instead you'll be **scraping** the data, using five years of Ballotpedia pages that have already been saved as local HTML files in the `data-raw` folder of your repo:
+
+```
+data-raw/ballotpedia-2016.html
+data-raw/ballotpedia-2018.html
+data-raw/ballotpedia-2020.html
+data-raw/ballotpedia-2022.html
+data-raw/ballotpedia-2024.html
+```
 
 # Exercises
 
@@ -62,29 +73,22 @@ This assignment does not come with any prepared datasets. Instead you'll be scra
 
 The data come from [Ballotpedia](https://ballotpedia.org/), a nonpartisan online encyclopedia of American politics and elections. Ballotpedia maintains a page for each even-numbered election year that lists every statewide ballot measure, split into two tables (citizen-initiated measures and legislative/other referred measures) that share the exact same columns: the measure's name, total contributions, contributions in support, contributions in opposition, and the outcome.
 
-Before getting started, let's check that a bot has permission to access pages on this domain.
-```{r paths-allowed, warning=FALSE, eval = TRUE}
-paths_allowed("https://ballotpedia.org")
-```
-
-**What this means:** If the result is `TRUE`, we have permission to scrape. If `FALSE`, we should not proceed.
-
-Our goal is to scrape data for ballot measure contributions in every election year Ballotpedia has data for using this consistent URL pattern (2016 through 2024). Since that means repeating a task many times, let's first write a function that works on one page. Confirm it works on a few others. Then iterate it over pages for all years.
+Our goal is to scrape data for ballot measure contributions in every election year we have a saved page for (2016 through 2024). Since that means repeating a task many times, let's first write a function that works on one page. Confirm it works on a few others. Then iterate it over pages for all years.
 
 Complete the following set of steps in the `scrape-measures.R` file in the `scripts` folder of your repository. This file already contains some starter code to help you out.
 
-Exercise 1. Write a function called `scrape_measures()` that scrapes information from a Ballotpedia webpage for ballot measure contributions in a given year. This function should
+Exercise 1. Write a function called `scrape_measures()` that scrapes information from a saved Ballotpedia page for ballot measure contributions in a given year. This function should
 
-- have one input: the URL of the webpage, and should return a data frame.
+- have one input: the file path to a pre-saved HTML page, and should return a data frame.
 - use a CSS selector that matches **both** contribution tables on the page (they share identical columns), and combine them into a single data frame with `bind_rows()`.
 - rename the scraped columns using `snake_case` naming: `measure`, `total`, `support`, `opposition`, `outcome`.
-- add a new column to the data frame for `year`. We will want this information when we ultimately have data from all years, so this is a good time to keep track of it. Our function doesn't take a year argument, but the year is embedded in the URL, so we can extract it out of there and add it as a new column. Use the `str_sub()` function to extract the last 4 characters from the URL. You will probably want to look at the help for this function to figure out how to specify "last 4 characters."
+- add a new column to the data frame for `year`. We will want this information when we ultimately have data from all years, so this is a good time to keep track of it. Our function doesn't take a year argument, but the year is embedded in the file name instead (e.g. `data-raw/ballotpedia-2024.html`), so we can extract it out of there and add it as a new column. Use the `str_sub()` function to grab the 4 digits right before `.html`. You will probably want to look at the help for this function to figure out how to specify that range.
 
-Exercise 2. Define the URLs for 2024, 2020, and 2016 contributions. Then, test your function using these URLs as inputs. Does the function seem to do what you expected it to do?
+Exercise 2. Define the file paths for the 2024, 2020, and 2016 pages. Then, test your function using these file paths as inputs. Does the function seem to do what you expected it to do?
 
-Exercise 3. Construct a vector called `urls` that contains the URLs for each webpage that contains information on ballot measure contributions for a given year. Ballot measures are decided in general elections, so only even years exist, and Ballotpedia's URL naming pattern is only consistent from 2016 onward - earlier years use a different page-naming convention, so we'll stick to 2016-2024 (5 election cycles).
+Exercise 3. Construct a vector called `files` that contains the file paths for each saved page you want to scrape. Ballot measures are decided in general elections, so only even years exist, and we have pages saved for 2016-2024 (5 election cycles).
 
-Exercise 4. Map the `scrape_measures()` function over `urls` in a way that will result in a data frame called `measures_all`.
+Exercise 4. Map the `scrape_measures()` function over `files` in a way that will result in a data frame called `measures_all`.
 
 Exercise 5. Write the data frame to a csv file called `measures-all.csv` in the `data` folder.
 
@@ -196,7 +200,7 @@ measures_all %>%
 knitr::include_graphics("img/target-support-vs-opposition.png")
 ```
 
-**Note:** The figure you create might look slightly different than this one if the data on the website has been updated recently.
+**Note:** The figure you create might look slightly different than this one if the data on the website had been updated when the pages were saved.
 
 **Your interpretation:**
 
@@ -235,8 +239,8 @@ measures_all %>%
 
 - **Error: "could not find function"** → Make sure you loaded `rvest`: `library(rvest)`
 - **`html_elements()` returns 0 or more than 2 tables** → Double-check your CSS selector with SelectorGadget; the two contribution tables share a specific combination of classes that no other table on the page has
-- **HTTP errors or empty results** → The website may be down; try again in a few minutes
-- **A year is missing rows or errors out** → Confirm the URL for that year opens correctly in a browser first
+- **"cannot open file" / file not found** → Double-check the file path - it should point to a file inside `data-raw/` (e.g. `"data-raw/ballotpedia-2024.html"`), and the file name needs to match exactly, including the year
+- **A year is missing rows or errors out** → Open that year's saved HTML file directly in a web browser first to confirm it looks like a normal Ballotpedia page
 
 **Data cleaning errors:**
 
